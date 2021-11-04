@@ -26,8 +26,7 @@ export default NextAuth({
 
         if (!isValid) {
           client.close();
-
-          throw new Error("Wrong password entered");
+          throw new Error("Wrong password entered!!!");
         }
         client.close();
 
