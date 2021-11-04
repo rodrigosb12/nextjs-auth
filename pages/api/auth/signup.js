@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
 import connectToDatabase from "../../../lib/db";
 import { hashPassword } from "../../../lib/auth";
 
@@ -19,6 +18,14 @@ const handler = async (req, res) => {
 
     const db = client.db();
 
+    const existingUser = await db.collection("users").findOne({ email: email });
+
+    if (existingUser) {
+      res.status(422).json({ json: "Email already linked to an user account" });
+      client.close();
+      return;
+    }
+
     const hashedPassword = await hashPassword(password);
 
     const result = await db
@@ -26,6 +33,7 @@ const handler = async (req, res) => {
       .insertOne({ email: email, password: hashedPassword });
 
     res.status(201).json({ message: "Created user!" });
+    client.close();
   }
 };
 
